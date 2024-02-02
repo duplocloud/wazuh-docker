@@ -32,4 +32,4 @@ fi
 # Install Wazuh App
 $INSTALL_DIR/bin/opensearch-dashboards-plugin install $WAZUH_APP --allow-root
 $INSTALL_DIR/bin/opensearch-dashboards-plugin install $WAZUH_CHECK_UPDATES --allow-root
-$INSTALL_DIR/bin/opensearch-dashboards-plugin install $WAZUH_CORE --allow-root
+$INSTALL_DIR/bin/opensearch-dashboards-plugin install https://duplo-wazuh.s3.us-west-2.amazonaws.com/wazuh-4.7.2.zip --allow-root

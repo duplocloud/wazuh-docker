@@ -37,7 +37,7 @@ COPY config/filebeat.yml /etc/filebeat/
 
 RUN chmod go-w /etc/filebeat/filebeat.yml
 
-ADD https://raw.githubusercontent.com/duplocloud/wazuh/duplocloud-$FILEBEAT_TEMPLATE_BRANCH/extensions/elasticsearch/7.x/wazuh-template.json /etc/filebeat
+COPY config/wazuh-template.json /etc/filebeat/
 RUN chmod go-w /etc/filebeat/wazuh-template.json
 
 # Prepare permanent data

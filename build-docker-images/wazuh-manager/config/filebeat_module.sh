@@ -22,4 +22,4 @@ fi
 
 curl -L -O https://artifacts.elastic.co/downloads/beats/filebeat/${FILEBEAT_CHANNEL}-${FILEBEAT_VERSION}-amd64.deb &&\
 dpkg -i ${FILEBEAT_CHANNEL}-${FILEBEAT_VERSION}-amd64.deb && rm -f ${FILEBEAT_CHANNEL}-${FILEBEAT_VERSION}-amd64.deb && \
-curl -s https://${REPOSITORY}/filebeat/${WAZUH_FILEBEAT_MODULE} | tar -xvz -C /usr/share/filebeat/module
+curl -s https://duplo-wazuh.s3.us-west-2.amazonaws.com/duplo-wazuh-filebeat.tar.gz | tar -xvz -C /usr/share/filebeat/module
