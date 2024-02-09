@@ -21,6 +21,9 @@ COPY config/config.sh .
 COPY config/config.yml /
 RUN bash config.sh
 
+# Copy custom icons
+COPY assets /tmp/assets
+
 COPY config/install_wazuh_app.sh /
 RUN chmod 775 /install_wazuh_app.sh
 RUN bash /install_wazuh_app.sh

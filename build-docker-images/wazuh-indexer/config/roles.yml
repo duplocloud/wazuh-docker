@@ -136,6 +136,7 @@ wazuh_ui_user:
   index_permissions:
   - index_patterns:
     - "wazuh-*"
+    - "security-*"
     dls: ""
     fls: []
     masked_fields: []
@@ -151,6 +152,7 @@ wazuh_ui_admin:
   index_permissions:
   - index_patterns:
     - "wazuh-*"
+    - "security-*"
     dls: ""
     fls: []
     masked_fields: []
