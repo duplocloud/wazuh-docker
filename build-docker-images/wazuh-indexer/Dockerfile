@@ -69,6 +69,11 @@ RUN mkdir -p /var/lib/wazuh-indexer && chown 1000:1000 /var/lib/wazuh-indexer &&
     chmod 600 /usr/share/wazuh-indexer/jvm.options && \
     chmod 600 /usr/share/wazuh-indexer/opensearch.yml
 
+# Install repositories for snapshot management.
+RUN /usr/share/wazuh-indexer/bin/opensearch-plugin install --batch repository-s3
+RUN /usr/share/wazuh-indexer/bin/opensearch-plugin install --batch repository-azure
+RUN /usr/share/wazuh-indexer/bin/opensearch-plugin install --batch repository-gcs
+
 USER wazuh-indexer
 
 # Services ports

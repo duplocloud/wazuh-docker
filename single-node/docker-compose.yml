@@ -3,7 +3,7 @@ version: '3.7'
 
 services:
   wazuh.manager:
-    image: wazuh/wazuh-manager:4.7.2
+    image: duplocloud/wazuh-manager:4.7.2
     hostname: wazuh.manager
     restart: always
     ulimits:
@@ -21,13 +21,13 @@ services:
     environment:
       - INDEXER_URL=https://wazuh.indexer:9200
       - INDEXER_USERNAME=admin
-      - INDEXER_PASSWORD=SecretPassword
+      - INDEXER_PASSWORD=<<INDEXER_PASSWORD>>
       - FILEBEAT_SSL_VERIFICATION_MODE=full
       - SSL_CERTIFICATE_AUTHORITIES=/etc/ssl/root-ca.pem
       - SSL_CERTIFICATE=/etc/ssl/filebeat.pem
       - SSL_KEY=/etc/ssl/filebeat.key
       - API_USERNAME=wazuh-wui
-      - API_PASSWORD=MyS3cr37P450r.*-
+      - API_PASSWORD=<<WAZUH_API_PASSWORD>>
     volumes:
       - wazuh_api_configuration:/var/ossec/api/configuration
       - wazuh_etc:/var/ossec/etc
@@ -46,13 +46,13 @@ services:
       - ./config/wazuh_cluster/wazuh_manager.conf:/wazuh-config-mount/etc/ossec.conf
 
   wazuh.indexer:
-    image: wazuh/wazuh-indexer:4.7.2
+    image: duplocloud/wazuh-indexer:4.7.2
     hostname: wazuh.indexer
     restart: always
     ports:
       - "9200:9200"
     environment:
-      - "OPENSEARCH_JAVA_OPTS=-Xms512m -Xmx512m"
+      - "OPENSEARCH_JAVA_OPTS=-Xms3g -Xmx3g"
     ulimits:
       memlock:
         soft: -1
@@ -70,19 +70,19 @@ services:
       - ./config/wazuh_indexer/wazuh.indexer.yml:/usr/share/wazuh-indexer/opensearch.yml
 
   wazuh.dashboard:
-    image: wazuh/wazuh-dashboard:4.7.2
+    image: duplocloud/wazuh-dashboard:4.7.2
     hostname: wazuh.dashboard
     restart: always
     ports:
       - 443:5601
     environment:
       - INDEXER_USERNAME=admin
-      - INDEXER_PASSWORD=SecretPassword
+      - INDEXER_PASSWORD=<<INDEXER_PASSWORD>>
       - WAZUH_API_URL=https://wazuh.manager
       - DASHBOARD_USERNAME=kibanaserver
-      - DASHBOARD_PASSWORD=kibanaserver
+      - DASHBOARD_PASSWORD=<<KIBANASERVER_PASSWORD>>
       - API_USERNAME=wazuh-wui
-      - API_PASSWORD=MyS3cr37P450r.*-
+      - API_PASSWORD=<<WAZUH_API_PASSWORD>>
     volumes:
       - ./config/wazuh_indexer_ssl_certs/wazuh.dashboard.pem:/usr/share/wazuh-dashboard/certs/wazuh-dashboard.pem
       - ./config/wazuh_indexer_ssl_certs/wazuh.dashboard-key.pem:/usr/share/wazuh-dashboard/certs/wazuh-dashboard-key.pem
