@@ -60,6 +60,9 @@ RUN mkdir -p /var/ossec/var/multigroups && \
     chown root:wazuh /var/ossec/active-response/bin && \
     chmod 770 /var/ossec/active-response/bin
 
+COPY config/wazuh_manager.conf /wazuh-config-mount/etc/ossec.conf
+COPY config/wazuh_indexer_ssl_certs/* /etc/ssl/
+
 # Services ports
 EXPOSE 55000/tcp 1514/tcp 1515/tcp 514/udp 1516/tcp
 

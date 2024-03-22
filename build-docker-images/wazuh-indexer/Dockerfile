@@ -76,6 +76,8 @@ RUN /usr/share/wazuh-indexer/bin/opensearch-plugin install --batch repository-gc
 
 USER wazuh-indexer
 
+COPY config/wazuh_indexer_ssl_certs/ /usr/share/wazuh-indexer/certs/
+
 # Services ports
 EXPOSE 9200
 

@@ -100,6 +100,7 @@ COPY config/wazuh_app_config.sh /
 RUN chmod 700 /entrypoint.sh
 RUN chmod 700 /wazuh_app_config.sh
 RUN chown 1000:1000 /*.sh
+RUN apt-get update && apt install curl -y
 
 # Copy Install dir from builder to current image
 COPY --from=builder --chown=1000:1000 $INSTALL_DIR $INSTALL_DIR
@@ -111,7 +112,7 @@ RUN chown 1000:1000 /usr/share/wazuh-dashboard/plugins/wazuh/public/assets/custo
 # Set workdir and user
 WORKDIR $INSTALL_DIR
 USER wazuh-dashboard
-
+COPY config/wazuh_indexer_ssl_certs/* /usr/share/wazuh-dashboard/certs/
 # Services ports
 EXPOSE 443
 
