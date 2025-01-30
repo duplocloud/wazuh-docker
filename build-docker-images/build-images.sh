@@ -1,3 +1,12 @@
+#!/bin/bash
+set -e  # Exit immediately if a command exits with a non-zero status
+
+# Ensure docker-compose is installed
+if ! command -v docker-compose &> /dev/null; then
+    echo "ERROR: docker-compose not found. Installing..."
+    sudo apt-get update && sudo apt-get install -y docker-compose
+fi
+
 WAZUH_IMAGE_VERSION=4.7.2
 WAZUH_VERSION=$(echo $WAZUH_IMAGE_VERSION | sed -e 's/\.//g')
 WAZUH_TAG_REVISION=1
@@ -70,7 +79,7 @@ build() {
     echo WAZUH_FILEBEAT_MODULE=$WAZUH_FILEBEAT_MODULE >> .env
     echo WAZUH_UI_REVISION=$WAZUH_UI_REVISION >> .env
 
-    docker-compose -f build-docker-images/build-images.yml --env-file .env build --no-cache wazuh.indexer
+    docker-compose -f build-docker-images/build-images.yml --env-file .env build --no-cache wazuh-manager wazuh-indexer wazuh-dashboard
 
     return 0
 }
