@@ -3,8 +3,8 @@ FROM ubuntu:focal
 
 RUN rm /bin/sh && ln -s /bin/bash /bin/sh
 
-ARG WAZUH_VERSION
-ARG WAZUH_TAG_REVISION
+ARG WAZUH_VERSION=4.7.2
+ARG WAZUH_TAG_REVISION=1
 ARG FILEBEAT_TEMPLATE_BRANCH
 ARG FILEBEAT_CHANNEL=filebeat-oss
 ARG FILEBEAT_VERSION=7.10.2
@@ -13,11 +13,13 @@ ARG WAZUH_FILEBEAT_MODULE
 RUN apt-get update && apt install curl apt-transport-https lsb-release gnupg -y
 
 COPY config/check_repository.sh /
-RUN chmod 775 /check_repository.sh
-RUN source /check_repository.sh
+RUN chmod 775 /check_repository.sh && \
+    . /check_repository.sh && \
+    echo "WAZUH_VERSION: $WAZUH_VERSION" && \
+    echo "WAZUH_TAG_REVISION: $WAZUH_TAG_REVISION"
 
 RUN apt-get update && \
-    apt-get install wazuh-manager=${WAZUH_VERSION}-${WAZUH_TAG_REVISION}
+    apt-get install -y wazuh-manager=${WAZUH_VERSION}-${WAZUH_TAG_REVISION}
 
 COPY config/filebeat_module.sh /
 RUN chmod 775 /filebeat_module.sh

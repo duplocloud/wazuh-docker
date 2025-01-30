@@ -25,5 +25,5 @@ elif [ "$MAJOR_BUILD" -eq "$MAJOR_CURRENT" ]; then
   fi
 fi
 
-apt-key adv --fetch-keys ${APT_KEY}
+curl -fsSL ${APT_KEY} | gpg --dearmor | tee /etc/apt/trusted.gpg.d/wazuh.gpg > /dev/null
 echo ${REPOSITORY} | tee -a /etc/apt/sources.list.d/wazuh.list
