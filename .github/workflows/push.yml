@@ -10,9 +10,34 @@ jobs:
     - name: Check out code
       uses: actions/checkout@v3
 
+    - name: Install Docker & Docker Compose
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y docker-compose
+
     - name: Build Wazuh images
       run: build-docker-images/build-images.sh
 
+    - name: Check if Docker images exist before saving
+        run: |
+          if docker images | grep -q "wazuh/wazuh-manager"; then
+            docker save wazuh/wazuh-manager:4.7.2 -o /home/runner/work/wazuh-docker/wazuh-docker/docker-images/wazuh-manager.tar
+          else
+            echo "Wazuh Manager image does not exist, skipping..."
+          fi
+
+          if docker images | grep -q "wazuh/wazuh-indexer"; then
+            docker save wazuh/wazuh-indexer:4.7.2 -o /home/runner/work/wazuh-docker/wazuh-docker/docker-images/wazuh-indexer.tar
+          else
+            echo "Wazuh Indexer image does not exist, skipping..."
+          fi
+
+          if docker images | grep -q "wazuh/wazuh-dashboard"; then
+            docker save wazuh/wazuh-dashboard:4.7.2 -o /home/runner/work/wazuh-docker/wazuh-docker/docker-images/wazuh-dashboard.tar
+          else
+            echo "Wazuh Dashboard image does not exist, skipping..."
+          fi
+          
     - name: Create enviroment variables
       run: cat .env > $GITHUB_ENV
 
