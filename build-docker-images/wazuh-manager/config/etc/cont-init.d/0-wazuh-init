@@ -131,15 +131,15 @@ create_ossec_key_cert() {
 # replace the ossec.conf file in /var/ossec/data/etc with yours.
 ##############################################################################
 
-mount_files() {
-  if [ -e "$WAZUH_CONFIG_MOUNT" ]
-  then
-    print "Identified Wazuh configuration files to mount..."
-    exec_cmd_stdout "cp --verbose -r $WAZUH_CONFIG_MOUNT/* $WAZUH_INSTALL_PATH"
-  else
-    print "No Wazuh configuration files to mount..."
-  fi
-}
+# mount_files() {
+#   if [ -e "$WAZUH_CONFIG_MOUNT" ]
+#   then
+#     print "Identified Wazuh configuration files to mount..."
+#     exec_cmd_stdout "cp --verbose -r $WAZUH_CONFIG_MOUNT/* $WAZUH_INSTALL_PATH"
+#   else
+#     print "No Wazuh configuration files to mount..."
+#   fi
+# }
 
 
 ##############################################################################
@@ -218,7 +218,7 @@ main() {
   fi
 
   # Mount selected files (WAZUH_CONFIG_MOUNT) to container
-  mount_files
+  # mount_files
 
   # Allow setting custom hostname
   set_custom_hostname
