@@ -60,8 +60,7 @@ RUN mkdir -p /var/ossec/var/multigroups && \
     chown root:wazuh /var/ossec/active-response/bin && \
     chmod 770 /var/ossec/active-response/bin
 
-COPY config/wazuh_manager.conf /var/ossec/etc/ossec.conf
-RUN chown root:wazuh /var/ossec/etc/ossec.conf && chmod 640 /var/ossec/etc/ossec.conf
+COPY config/wazuh_manager.conf /wazuh-config-mount/etc/ossec.conf
 COPY config/wazuh_indexer_ssl_certs/* /etc/ssl/
 
 # Services ports
