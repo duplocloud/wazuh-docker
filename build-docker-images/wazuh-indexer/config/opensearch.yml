@@ -6,6 +6,8 @@ discovery.type: single-node
 http.port: 9200-9299
 transport.tcp.port: 9300-9399
 compatibility.override_main_response_version: true
+
+# SSL Configuration
 plugins.security.ssl.http.pemcert_filepath: /usr/share/wazuh-indexer/certs/wazuh.indexer.pem
 plugins.security.ssl.http.pemkey_filepath: /usr/share/wazuh-indexer/certs/wazuh.indexer.key
 plugins.security.ssl.http.pemtrustedcas_filepath: /usr/share/wazuh-indexer/certs/root-ca.pem
@@ -15,17 +17,58 @@ plugins.security.ssl.transport.pemtrustedcas_filepath: /usr/share/wazuh-indexer/
 plugins.security.ssl.http.enabled: true
 plugins.security.ssl.transport.enforce_hostname_verification: false
 plugins.security.ssl.transport.resolve_hostname: false
+
+# Security Configuration
 plugins.security.authcz.admin_dn:
-- "CN=admin,OU=Wazuh,O=Wazuh,L=California,C=US"
+  - "CN=admin,OU=Wazuh,O=Wazuh,L=California,C=US"
 plugins.security.check_snapshot_restore_write_privileges: true
 plugins.security.enable_snapshot_restore_privilege: true
 plugins.security.nodes_dn:
-- "CN=wazuh.indexer,OU=Wazuh,O=Wazuh,L=California,C=US"
+  - "CN=wazuh.indexer,OU=Wazuh,O=Wazuh,L=California,C=US"
 plugins.security.restapi.roles_enabled:
-- "all_access"
-- "security_rest_api_access"
+  - "all_access"
+  - "security_rest_api_access"
 plugins.security.system_indices.enabled: true
-plugins.security.system_indices.indices: [".opendistro-alerting-config", ".opendistro-alerting-alert*", ".opendistro-anomaly-results*", ".opendistro-anomaly-detector*", ".opendistro-anomaly-checkpoints", ".opendistro-anomaly-detection-state", ".opendistro-reports-*", ".opendistro-notifications-*", ".opendistro-notebooks", ".opensearch-observability", ".opendistro-asynchronous-search-response*", ".replication-metadata-store"]
+plugins.security.system_indices.indices:
+  - ".opendistro-alerting-config"
+  - ".opendistro-alerting-alert*"
+  - ".opendistro-anomaly-results*"
+  - ".opendistro-anomaly-detector*"
+  - ".opendistro-anomaly-checkpoints"
+  - ".opendistro-anomaly-detection-state"
+  - ".opendistro-reports-*"
+  - ".opendistro-notifications-*"
+  - ".opendistro-notebooks"
+  - ".opensearch-observability"
+  - ".opendistro-asynchronous-search-response*"
+  - ".replication-metadata-store"
 plugins.security.allow_default_init_securityindex: true
 cluster.routing.allocation.disk.threshold_enabled: false
 plugins.security.audit.type: internal_opensearch
+
+# Azure Blob Storage Snapshot Repository Configuration
+# Referencing credentials from the OpenSearch Keystore
+azure.client.default.account: "${azure.client.default.account}"
+azure.client.default.key: "${azure.client.default.key}"
+# Optional if you need a custom endpoint suffix for specific Azure regions (e.g., Azure China, Government, etc.)
+azure.client.default.endpoint_suffix: "${azure.client.default.endpoint_suffix:core.windows.net}"
+
+# Optional: You can also use a shared access signature (SAS) token or managed identity (for Azure token credentials)
+# azure.client.default.sas_token: "${azure.client.default.sas_token}" # Uncomment if using SAS Token
+# azure.client.default.token_credential_type: "managed_identity" # Uncomment if using managed identity
+
+# Set snapshot repository for Azure
+# The repository name "my_azure_repo" will be used when creating the snapshot
+# You can define the container, base path, and chunk size as per your requirement in the snapshot creation API
+# Example:
+# PUT /_snapshot/my_azure_repo
+# {
+#   "type": "azure",
+#   "settings": {
+#     "client": "default",
+#     "container": "my-container-name",
+#     "base_path": "optional/path",
+#     "chunk_size": "64m",
+#     "compress": true
+#   }
+# }
