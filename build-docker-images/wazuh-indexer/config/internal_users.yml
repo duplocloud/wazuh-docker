@@ -1,33 +1,27 @@
 ---
 # This is the internal user database
-# The hash value is a bcrypt hash and can be generated with plugin/tools/hash.sh
-
 _meta:
   type: "internalusers"
   config_version: 2
 
-# Define your internal users here
-
-## Demo users
-
 admin:
-  hash: "$2y$12$mmVZUj7FxSdS.LT.mvRD/eh1K/sUWuWq6BPZ4tLywBPdYbz7BCeZG"
+  hash: "changeme"
   reserved: true
   backend_roles:
-  - "admin"
+    - "admin"
   description: "Demo admin user"
 
 kibanaserver:
-  hash: "$2y$12$clDhtcmvXrzUaI.yzKsO3Orn0dmxd3KGUf2X2H.pxMN8XBbQueQ8y"
+  hash: "changeme"
   reserved: true
   description: "Demo kibanaserver user"
 
 kibanaro:
-  hash: "$2a$12$JJSXNfTowz7Uu5ttXfeYpeYE0arACvcwlPBStB1F.MI7f0U9Z4DGC"
+  hash: "changeme"
   reserved: false
   backend_roles:
-  - "kibanauser"
-  - "readall"
+    - "kibanauser"
+    - "readall"
   attributes:
     attribute1: "value1"
     attribute2: "value2"
@@ -35,40 +29,40 @@ kibanaro:
   description: "Demo kibanaro user"
 
 logstash:
-  hash: "$2a$12$u1ShR4l4uBS3Uv59Pa2y5.1uQuZBrZtmNfqB3iM/.jL0XoV9sghS2"
+  hash: "changeme"
   reserved: false
   backend_roles:
-  - "logstash"
+    - "logstash"
   description: "Demo logstash user"
 
 readall:
-  hash: "$2a$12$ae4ycwzwvLtZxwZ82RmiEunBbIPiAmGZduBAjKN0TXdwQFtCwARz2"
+  hash: "changeme"
   reserved: false
   backend_roles:
-  - "readall"
+    - "readall"
   description: "Demo readall user"
 
 snapshotrestore:
-  hash: "$2y$12$DpwmetHKwgYnorbgdvORCenv4NAK8cPUg8AI6pxLCuWf/ALc0.v7W"
+  hash: "changeme"
   reserved: false
   backend_roles:
-  - "snapshotrestore"
+    - "snapshotrestore"
   description: "Demo snapshotrestore user"
 
 wazuh_admin:
-  hash: "$2y$12$HKoUxB2nxd.mX6ZPdkSTZuRafn2WimISFcVQDjK0hf1mHEeFV2NqW"
+  hash: "changeme"
   reserved: true
   hidden: false
   backend_roles: []
   attributes: {}
   opendistro_security_roles: []
   static: false
-  
+
 wazuh_user:
-  hash: "$2y$12$gwbw.TcYc6tcjGS7xmfPKeFvRruA/2LD2uedas1fkVm1OFCxkdr/O"
+  hash: "changeme"
   reserved: true
   hidden: false
   backend_roles: []
   attributes: {}
   opendistro_security_roles: []
-  static: false  
+  static: false
