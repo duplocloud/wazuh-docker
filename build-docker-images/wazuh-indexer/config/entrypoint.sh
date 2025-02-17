@@ -46,22 +46,21 @@ source /usr/share/wazuh-indexer/bin/opensearch-env-from-file
 if [[ -f bin/opensearch-users ]]; then
   # Check for the INDEXER_PASSWORD environment variable to set the bootstrap password for Security.
   if [[ -n "$INDEXER_PASSWORD" ]]; then
-    [[ -f /usr/share/wazuh-indexer/opensearch.keystore ]] || (run_as_other_user_if_needed opensearch-keystore create)
-    if ! (run_as_other_user_if_needed opensearch-keystore has-passwd --silent) ; then
-      # Keystore is unencrypted
-      if ! (run_as_other_user_if_needed opensearch-keystore list | grep -q '^bootstrap.password$'); then
-        (run_as_other_user_if_needed echo "$INDEXER_PASSWORD" | opensearch-keystore add -x 'bootstrap.password')
+    [[ -f /usr/share/wazuh-indexer/opensearch.keystore ]] || (run_as_other_user_if_needed /usr/share/wazuh-indexer/bin/opensearch-keystore create)
+    if ! (run_as_other_user_if_needed /usr/share/wazuh-indexer/bin/opensearch-keystore has-passwd --silent) ; then
+      if ! (run_as_other_user_if_needed /usr/share/wazuh-indexer/bin/opensearch-keystore list | grep -q '^bootstrap.password$'); then
+       (run_as_other_user_if_needed echo "$INDEXER_PASSWORD" | /usr/share/wazuh-indexer/bin/opensearch-keystore add -x 'bootstrap.password')
       fi
+    fi
     else
       # Keystore requires a password
       if ! (run_as_other_user_if_needed echo "$KEYSTORE_PASSWORD" \
-          | opensearch-keystore list | grep -q '^bootstrap.password$') ; then
+          | /usr/share/wazuh-indexer/bin/opensearch-keystore list | grep -q '^bootstrap.password$') ; then
         COMMANDS="$(printf "%s\n%s" "$KEYSTORE_PASSWORD" "$INDEXER_PASSWORD")"
-        (run_as_other_user_if_needed echo "$COMMANDS" | opensearch-keystore add -x 'bootstrap.password')
+        (run_as_other_user_if_needed echo "$COMMANDS" | /usr/share/wazuh-indexer/bin/opensearch-keystore add -x 'bootstrap.password')
       fi
     fi
   fi
-fi
 
 # ------------------------------------------------------------------------------
 # 2. Handle Azure credentials via the OpenSearch Keystore
@@ -69,7 +68,7 @@ fi
 # These environment variables (AZURE_ACCOUNT_NAME, AZURE_ACCOUNT_KEY, AZURE_ENDPOINT_SUFFIX)
 # should be passed at container runtime or via Docker Compose.
 if [[ -n "$AZURE_ACCOUNT_NAME" || -n "$AZURE_ACCOUNT_KEY" || -n "$AZURE_ENDPOINT_SUFFIX" ]]; then
-  [[ -f /usr/share/wazuh-indexer/opensearch.keystore ]] || (run_as_other_user_if_needed opensearch-keystore create)
+  [[ -f /usr/share/wazuh-indexer/opensearch.keystore ]] || (run_as_other_user_if_needed /usr/share/wazuh-indexer/bin/opensearch-keystore create)
 
   if [[ -n "$AZURE_ACCOUNT_NAME" ]]; then
     echo "$AZURE_ACCOUNT_NAME" | \

@@ -1,5 +1,5 @@
 # Wazuh Docker Copyright (C) 2017, Wazuh Inc. (License GPLv2)
-FROM ubuntu:focal AS builder
+FROM --platform=linux/amd64 ubuntu:focal AS builder
 
 ARG WAZUH_VERSION
 ARG WAZUH_TAG_REVISION
@@ -7,15 +7,10 @@ ARG WAZUH_TAG_REVISION
 RUN apt-get update -y && apt-get install curl openssl xz-utils -y
 
 COPY config/opensearch.yml /
-
 COPY config/config.sh .
-
 COPY config/config.yml /
-
 COPY config/internal_users.yml /
-
 COPY config/roles_mapping.yml /
-
 COPY config/roles.yml /
 
 RUN bash config.sh
@@ -26,20 +21,22 @@ RUN bash config.sh
 # Copy wazuh-indexer from stage 0
 # Add entrypoint
 ################################################################################
-FROM ubuntu:focal
+FROM --platform=linux/amd64 ubuntu:focal
 
 ENV USER="wazuh-indexer" \
     GROUP="wazuh-indexer" \
     NAME="wazuh-indexer" \
     INSTALL_DIR="/usr/share/wazuh-indexer"
 
-RUN getent group $GROUP || groupadd -r -g 1000 $GROUP
+# Ensure the 'wazuh' group exists
+RUN getent group wazuh || groupadd -g 1000 wazuh
 
-RUN useradd --system \
+# Ensure the 'wazuh-indexer' user exists
+RUN getent passwd wazuh-indexer || useradd --system \
             --uid 1000 \
             --no-create-home \
             --home-dir $INSTALL_DIR \
-            --gid $GROUP \
+            --gid wazuh \
             --shell /sbin/nologin \
             --comment "$USER user" \
             $USER
@@ -47,11 +44,9 @@ RUN useradd --system \
 WORKDIR $INSTALL_DIR
 
 COPY config/entrypoint.sh /
-
 COPY config/securityadmin.sh /
 
 RUN chmod 700 /entrypoint.sh && chmod 700 /securityadmin.sh
-
 RUN chown 1000:1000 /*.sh
 
 COPY --from=builder --chown=1000:1000 /debian/wazuh-indexer/usr/share/wazuh-indexer /usr/share/wazuh-indexer
@@ -61,6 +56,10 @@ COPY --from=builder --chown=0:0 /debian/wazuh-indexer/usr/lib/tmpfiles.d /usr/li
 
 RUN chown -R 1000:1000 /usr/share/wazuh-indexer
 
+# Create directories and ensure correct permissions
+RUN mkdir -p /etc/wazuh-indexer && \
+    chown -R wazuh-indexer:wazuh /etc/wazuh-indexer
+
 RUN mkdir -p /var/lib/wazuh-indexer && chown 1000:1000 /var/lib/wazuh-indexer && \
     mkdir -p /usr/share/wazuh-indexer/logs && chown 1000:1000 /usr/share/wazuh-indexer/logs && \
     mkdir -p /run/wazuh-indexer && chown 1000:1000 /run/wazuh-indexer && \
@@ -69,7 +68,7 @@ RUN mkdir -p /var/lib/wazuh-indexer && chown 1000:1000 /var/lib/wazuh-indexer &&
     chmod 600 /usr/share/wazuh-indexer/jvm.options && \
     chmod 600 /usr/share/wazuh-indexer/opensearch.yml
 
-# Install repositories for snapshot management.
+# Install repositories for snapshot management
 RUN /usr/share/wazuh-indexer/bin/opensearch-plugin install --batch repository-s3
 RUN /usr/share/wazuh-indexer/bin/opensearch-plugin install --batch repository-azure
 RUN /usr/share/wazuh-indexer/bin/opensearch-plugin install --batch repository-gcs
