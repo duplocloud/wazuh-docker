@@ -40,7 +40,8 @@ RUN useradd --system \
             --shell /sbin/nologin \
             --comment "$USER user" \
             $USER
-
+# Install gettext (which provides envsubst)
+RUN apt-get update && apt-get install -y gettext && rm -rf /var/lib/apt/lists/*
 WORKDIR $INSTALL_DIR
 
 COPY config/entrypoint.sh /
@@ -55,7 +56,7 @@ COPY --from=builder --chown=0:0 /debian/wazuh-indexer/usr/lib/sysctl.d /usr/lib/
 COPY --from=builder --chown=0:0 /debian/wazuh-indexer/usr/lib/tmpfiles.d /usr/lib/tmpfiles.d
 
 RUN chown -R 1000:1000 /usr/share/wazuh-indexer
-
+RUN mkdir -p /etc/wazuh-indexer && chown -R wazuh-indexer:wazuh-indexer /etc/wazuh-indexer
 RUN mkdir -p /var/lib/wazuh-indexer && chown 1000:1000 /var/lib/wazuh-indexer && \
     mkdir -p /usr/share/wazuh-indexer/logs && chown 1000:1000 /usr/share/wazuh-indexer/logs && \
     mkdir -p /run/wazuh-indexer && chown 1000:1000 /run/wazuh-indexer && \
