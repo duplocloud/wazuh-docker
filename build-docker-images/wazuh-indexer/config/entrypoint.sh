@@ -61,6 +61,7 @@ if [[ -f bin/opensearch-users ]]; then
       fi
     fi
   fi
+fi
 
 # ------------------------------------------------------------------------------
 # 2. Handle Azure credentials via the OpenSearch Keystore

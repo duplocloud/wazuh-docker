@@ -29,14 +29,14 @@ ENV USER="wazuh-indexer" \
     INSTALL_DIR="/usr/share/wazuh-indexer"
 
 # Ensure the 'wazuh' group exists
-RUN getent group wazuh || groupadd -g 1000 wazuh
+RUN getent group $GROUP || groupadd -r -g 1000 $GROUP
 
 # Ensure the 'wazuh-indexer' user exists
-RUN getent passwd wazuh-indexer || useradd --system \
+RUN useradd --system \
             --uid 1000 \
             --no-create-home \
             --home-dir $INSTALL_DIR \
-            --gid wazuh \
+            --gid $GROUP \
             --shell /sbin/nologin \
             --comment "$USER user" \
             $USER
@@ -55,10 +55,6 @@ COPY --from=builder --chown=0:0 /debian/wazuh-indexer/usr/lib/sysctl.d /usr/lib/
 COPY --from=builder --chown=0:0 /debian/wazuh-indexer/usr/lib/tmpfiles.d /usr/lib/tmpfiles.d
 
 RUN chown -R 1000:1000 /usr/share/wazuh-indexer
-
-# Create directories and ensure correct permissions
-RUN mkdir -p /etc/wazuh-indexer && \
-    chown -R wazuh-indexer:wazuh /etc/wazuh-indexer
 
 RUN mkdir -p /var/lib/wazuh-indexer && chown 1000:1000 /var/lib/wazuh-indexer && \
     mkdir -p /usr/share/wazuh-indexer/logs && chown 1000:1000 /usr/share/wazuh-indexer/logs && \
