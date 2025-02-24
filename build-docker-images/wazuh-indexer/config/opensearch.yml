@@ -39,6 +39,8 @@ plugins.security.audit.type: internal_opensearch
 # Azure Blob Storage Snapshot Repository Configuration
 azure.client.default.account: "${AZURE_ACCOUNT_NAME}"
 azure.client.default.key: "${AZURE_ACCOUNT_KEY}"
+azure.client.default.endpoint_suffix: ${AZURE_ENDPOINT_SUFFIX}
+
 # azure.client.default.endpoint_suffix: "${AZURE_ENDPOINT_SUFFIX}"
 
 # Optional: You can also use a shared access signature (SAS) token or managed identity (for Azure token credentials)

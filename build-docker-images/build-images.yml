@@ -42,7 +42,7 @@ services:
       args:
         WAZUH_VERSION: ${WAZUH_VERSION}
         WAZUH_TAG_REVISION: ${WAZUH_TAG_REVISION}
-    image: duplocloud/wazuh-indexer:${WAZUH_IMAGE_VERSION}-audit
+    image: duplocloud/wazuh-indexer:${WAZUH_IMAGE_VERSION}-auditazure
     hostname: wazuh.indexer
     restart: always
     ports:

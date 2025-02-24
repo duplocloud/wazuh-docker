@@ -4,7 +4,7 @@ FROM --platform=linux/amd64 ubuntu:focal AS builder
 ARG WAZUH_VERSION
 ARG WAZUH_TAG_REVISION
 
-RUN apt-get update -y && apt-get install curl openssl xz-utils -y
+RUN apt-get update -y && apt-get install -y curl openssl xz-utils
 
 COPY config/opensearch.yml /
 COPY config/config.sh .
@@ -28,7 +28,7 @@ ENV USER="wazuh-indexer" \
     NAME="wazuh-indexer" \
     INSTALL_DIR="/usr/share/wazuh-indexer"
 
-# Ensure the 'wazuh' group exists
+# Ensure the 'wazuh-indexer' group exists
 RUN getent group $GROUP || groupadd -r -g 1000 $GROUP
 
 # Ensure the 'wazuh-indexer' user exists
@@ -40,8 +40,7 @@ RUN useradd --system \
             --shell /sbin/nologin \
             --comment "$USER user" \
             $USER
-# Install gettext (which provides envsubst)
-RUN apt-get update && apt-get install -y gettext && rm -rf /var/lib/apt/lists/*
+
 WORKDIR $INSTALL_DIR
 
 COPY config/entrypoint.sh /
@@ -56,7 +55,7 @@ COPY --from=builder --chown=0:0 /debian/wazuh-indexer/usr/lib/sysctl.d /usr/lib/
 COPY --from=builder --chown=0:0 /debian/wazuh-indexer/usr/lib/tmpfiles.d /usr/lib/tmpfiles.d
 
 RUN chown -R 1000:1000 /usr/share/wazuh-indexer
-RUN mkdir -p /etc/wazuh-indexer && chown -R wazuh-indexer:wazuh-indexer /etc/wazuh-indexer
+
 RUN mkdir -p /var/lib/wazuh-indexer && chown 1000:1000 /var/lib/wazuh-indexer && \
     mkdir -p /usr/share/wazuh-indexer/logs && chown 1000:1000 /usr/share/wazuh-indexer/logs && \
     mkdir -p /run/wazuh-indexer && chown 1000:1000 /run/wazuh-indexer && \
@@ -65,6 +64,15 @@ RUN mkdir -p /var/lib/wazuh-indexer && chown 1000:1000 /var/lib/wazuh-indexer &&
     chmod 600 /usr/share/wazuh-indexer/jvm.options && \
     chmod 600 /usr/share/wazuh-indexer/opensearch.yml
 
+# Set the environment variable for the configuration directory
+ENV OPENSEARCH_PATH_CONF=/usr/share/wazuh-indexer 
+
+
+# Provide dummy values for Azure credentials to resolve placeholders
+ENV AZURE_ACCOUNT_NAME=dummy \
+    AZURE_ACCOUNT_KEY=dummy \
+    AZURE_ENDPOINT_SUFFIX=dummy
+    
 # Install repositories for snapshot management
 RUN /usr/share/wazuh-indexer/bin/opensearch-plugin install --batch repository-s3
 RUN /usr/share/wazuh-indexer/bin/opensearch-plugin install --batch repository-azure

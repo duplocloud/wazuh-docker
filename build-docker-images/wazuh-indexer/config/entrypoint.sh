@@ -43,9 +43,9 @@ source /usr/share/wazuh-indexer/bin/opensearch-env-from-file
 # ------------------------------------------------------------------------------
 # 1. Handle the INDEXER_PASSWORD (for the Security bootstrap) if present
 # ------------------------------------------------------------------------------
-if [[ -f bin/opensearch-users ]]; then
+if [[ -f /usr/share/wazuh-indexer/bin/opensearch-users ]]; then
   # Check for the INDEXER_PASSWORD environment variable to set the bootstrap password for Security.
-if [[ -n "$INDEXER_PASSWORD" ]]; then
+  if [[ -n "$INDEXER_PASSWORD" ]]; then
     [[ -f /usr/share/wazuh-indexer/opensearch.keystore ]] || (run_as_other_user_if_needed opensearch-keystore create)
     if ! (run_as_other_user_if_needed opensearch-keystore has-passwd --silent) ; then
       # keystore is unencrypted
@@ -68,28 +68,26 @@ fi
 # ------------------------------------------------------------------------------
 # These environment variables (AZURE_ACCOUNT_NAME, AZURE_ACCOUNT_KEY, AZURE_ENDPOINT_SUFFIX)
 # should be passed at container runtime or via Docker Compose.
-if [[ -n "$AZURE_ACCOUNT_NAME" || -n "$AZURE_ACCOUNT_KEY" || -n "$AZURE_ENDPOINT_SUFFIX" ]]; then
-  [[ -f /usr/share/wazuh-indexer/opensearch.keystore ]] || (run_as_other_user_if_needed /usr/share/wazuh-indexer/bin/opensearch-keystore create)
+# ------------------------------------------------------------------------------
+# 2. Handle Azure credentials via the OpenSearch Keystore
+# ------------------------------------------------------------------------------
+if [[ -n "$AZURE_ACCOUNT_NAME" || -n "$AZURE_ACCOUNT_KEY" ]]; then
+  [[ -f /usr/share/wazuh-indexer/opensearch.keystore ]] || run_as_other_user_if_needed /usr/share/wazuh-indexer/bin/opensearch-keystore create
 
   if [[ -n "$AZURE_ACCOUNT_NAME" ]]; then
-    echo "$AZURE_ACCOUNT_NAME" | \
-      run_as_other_user_if_needed /usr/share/wazuh-indexer/bin/opensearch-keystore add \
-        azure.client.default.account --stdin --force
+    echo "$AZURE_ACCOUNT_NAME" | run_as_other_user_if_needed /usr/share/wazuh-indexer/bin/opensearch-keystore add azure.client.default.account --stdin --force
   fi
 
   if [[ -n "$AZURE_ACCOUNT_KEY" ]]; then
-    echo "$AZURE_ACCOUNT_KEY" | \
-      run_as_other_user_if_needed /usr/share/wazuh-indexer/bin/opensearch-keystore add \
-        azure.client.default.key --stdin --force
+    echo "$AZURE_ACCOUNT_KEY" | run_as_other_user_if_needed /usr/share/wazuh-indexer/bin/opensearch-keystore add azure.client.default.key --stdin --force
   fi
-
-  # # If you need a custom endpoint suffix (e.g., for GovCloud):
-  # if [[ -n "$AZURE_ENDPOINT_SUFFIX" ]]; then
-  #   echo "$AZURE_ENDPOINT_SUFFIX" | \
-  #     run_as_other_user_if_needed /usr/share/wazuh-indexer/bin/opensearch-keystore add \
-  #       azure.client.default.endpoint_suffix --stdin --force
-  # fi
 fi
+
+# For the non-secure setting (endpoint suffix), define it in opensearch.yml.
+if [[ -n "$AZURE_ENDPOINT_SUFFIX" ]]; then
+  echo "INFO: Please ensure 'azure.client.default.endpoint_suffix' is defined in opensearch.yml (not in the keystore)."
+fi
+
 
 # ------------------------------------------------------------------------------
 # 3. Ownership adjustments if running as root (Openshift scenario, etc.)
@@ -108,12 +106,6 @@ fi
 #   nohup /securityadmin.sh &
 #   touch "/var/lib/wazuh-indexer/.flag"
 # fi
-
-# Substitute environment variables in opensearch.yml
-if [ -f "${OPENSEARCH_PATH_CONF}/opensearch.yml" ]; then
-  cp "${OPENSEARCH_PATH_CONF}/opensearch.yml" "${OPENSEARCH_PATH_CONF}/opensearch.yml.template"
-  envsubst < "${OPENSEARCH_PATH_CONF}/opensearch.yml.template" > "${OPENSEARCH_PATH_CONF}/opensearch.yml"
-fi
 
 # ------------------------------------------------------------------------------
 # 5. Finally, start OpenSearch as the wazuh-indexer user

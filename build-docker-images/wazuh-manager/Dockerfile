@@ -63,15 +63,18 @@ RUN mkdir -p /var/ossec/var/multigroups && \
 COPY config/integrations/custom-teams /var/ossec/integrations/custom-teams
 COPY config/integrations/custom-teams.py /var/ossec/integrations/custom-teams.py
 
+
+# RUN chown root:wazuh /var/ossec/etc/ossec.conf && chmod 640 /var/ossec/etc/ossec.conf
+
 # Set permissions for custom Teams integration files
 RUN chmod 750 /var/ossec/integrations/custom-teams && \
-    chown root:ossec /var/ossec/integrations/custom-teams && \
+    chown root:wazuh /var/ossec/integrations/custom-teams && \
     chmod 750 /var/ossec/integrations/custom-teams.py && \
-    chown root:ossec /var/ossec/integrations/custom-teams.py
+    chown root:wazuh /var/ossec/integrations/custom-teams.py
 
 # Add Wazuh Manager config for the integration
 COPY config/wazuh_manager.conf /wazuh-config-mount/etc/ossec.conf
-RUN chown root:wazuh /var/ossec/etc/ossec.conf && chmod 640 /var/ossec/etc/ossec.conf
+
 COPY config/wazuh_indexer_ssl_certs/* /etc/ssl/
 
 # Services ports
