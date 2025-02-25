@@ -66,6 +66,11 @@ fi
 # ------------------------------------------------------------------------------
 # 2. Handle Azure credentials via the OpenSearch Keystore
 # ------------------------------------------------------------------------------
+# These environment variables (AZURE_ACCOUNT_NAME, AZURE_ACCOUNT_KEY, AZURE_ENDPOINT_SUFFIX)
+# should be passed at container runtime or via Docker Compose.
+# ------------------------------------------------------------------------------
+# 2. Handle Azure credentials via the OpenSearch Keystore
+# ------------------------------------------------------------------------------
 if [[ -n "$AZURE_ACCOUNT_NAME" || -n "$AZURE_ACCOUNT_KEY" ]]; then
   [[ -f /usr/share/wazuh-indexer/opensearch.keystore ]] || run_as_other_user_if_needed /usr/share/wazuh-indexer/bin/opensearch-keystore create
 
@@ -78,9 +83,11 @@ if [[ -n "$AZURE_ACCOUNT_NAME" || -n "$AZURE_ACCOUNT_KEY" ]]; then
   fi
 fi
 
+# For the non-secure setting (endpoint suffix), define it in opensearch.yml.
 if [[ -n "$AZURE_ENDPOINT_SUFFIX" ]]; then
   echo "INFO: Please ensure 'azure.client.default.endpoint_suffix' is defined in opensearch.yml (not in the keystore)."
 fi
+
 
 # ------------------------------------------------------------------------------
 # 3. Ownership adjustments if running as root (Openshift scenario, etc.)
@@ -90,6 +97,15 @@ if [[ "$(id -u)" == "0" ]]; then
     chown -R 1000:0 /usr/share/wazuh-indexer/{data,logs}
   fi
 fi
+
+# ------------------------------------------------------------------------------
+# 4. (Optional) Securityadmin script for single-node mode (currently commented)
+# ------------------------------------------------------------------------------
+# if [[ "$DISCOVERY" == "single-node" ]] && [[ ! -f "/var/lib/wazuh-indexer/.flag" ]]; then
+#   # run securityadmin.sh for single node with CACERT, CERT, and KEY parameters
+#   nohup /securityadmin.sh &
+#   touch "/var/lib/wazuh-indexer/.flag"
+# fi
 
 # ------------------------------------------------------------------------------
 # 5. Finally, start OpenSearch as the wazuh-indexer user

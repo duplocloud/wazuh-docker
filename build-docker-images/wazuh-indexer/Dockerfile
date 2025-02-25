@@ -64,14 +64,17 @@ RUN mkdir -p /var/lib/wazuh-indexer && chown 1000:1000 /var/lib/wazuh-indexer &&
     chmod 600 /usr/share/wazuh-indexer/jvm.options && \
     chmod 600 /usr/share/wazuh-indexer/opensearch.yml
 
+
+
 # Set the environment variable for the configuration directory
 ENV OPENSEARCH_PATH_CONF=/usr/share/wazuh-indexer 
+
 
 # Provide dummy values for Azure credentials to resolve placeholders
 ENV AZURE_ACCOUNT_NAME=dummy \
     AZURE_ACCOUNT_KEY=dummy \
     AZURE_ENDPOINT_SUFFIX=dummy
-
+    
 # Install repositories for snapshot management
 RUN /usr/share/wazuh-indexer/bin/opensearch-plugin install --batch repository-s3
 RUN /usr/share/wazuh-indexer/bin/opensearch-plugin install --batch repository-azure
