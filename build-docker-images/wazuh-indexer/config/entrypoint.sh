@@ -26,25 +26,43 @@ run_as_other_user_if_needed() {
   fi
 }
 
-# Allow user to specify a custom CMD, for example "opensearch" with extra flags or "/bin/bash"
+# Allow user specify custom CMD, maybe bin/opensearch itself
+# for example to directly specify `-E` style parameters for opensearch on k8s
+# or simply to run /bin/bash to check the image
 if [[ "$1" != "opensearchwrapper" ]]; then
   if [[ "$(id -u)" == "0" && $(basename "$1") == "opensearch" ]]; then
-    # Rewrite CMD args to replace $1 with `opensearch` explicitly
+     # Rewrite CMD args to replace $1 with `opensearch` explicitly,
+    # Without this, user could specify `opensearch -E x.y=z` but
+    # `bin/opensearch -E x.y=z` would not work.
     set -- "opensearch" "${@:2}"
+        # Use chroot to switch to UID 1000 / GID 0
     exec chroot --userspec=1000:0 / "$@"
   else
+    # User probably wants to run something else, like /bin/bash, with another uid forced (Openshift?)
     exec "$@"
   fi
 fi
 
-# Source environment variables from file if *_FILE vars are provided
+# Allow environment variables to be set by creating a file with the
+# contents, and setting an environment variable with the suffix _FILE to
+# point to it. This can be used to provide secrets to a container, without
+# the values being specified explicitly when running the container.
+#
+# This is also sourced in opensearch-env, and is only needed here
+# as well because we use INDEXER_PASSWORD below. Sourcing this script
+# is idempotent.
 source /usr/share/wazuh-indexer/bin/opensearch-env-from-file
 
 # ------------------------------------------------------------------------------
 # 1. Handle the INDEXER_PASSWORD (for the Security bootstrap) if present
 # ------------------------------------------------------------------------------
 if [[ -f /usr/share/wazuh-indexer/bin/opensearch-users ]]; then
-  # Check for the INDEXER_PASSWORD environment variable to set the bootstrap password for Security.
+   # Check for the INDEXER_PASSWORD environment variable to set the
+  # bootstrap password for Security.
+  #
+  # This is only required for the first node in a cluster with Security
+  # enabled, but we have no way of knowing which node we are yet. We'll just
+  # honor the variable if it's present.
   if [[ -n "$INDEXER_PASSWORD" ]]; then
     [[ -f /usr/share/wazuh-indexer/opensearch.keystore ]] || (run_as_other_user_if_needed opensearch-keystore create)
     if ! (run_as_other_user_if_needed opensearch-keystore has-passwd --silent) ; then
@@ -93,6 +111,7 @@ fi
 # 3. Ownership adjustments if running as root (Openshift scenario, etc.)
 # ------------------------------------------------------------------------------
 if [[ "$(id -u)" == "0" ]]; then
+  # If requested and running as root, mutate the ownership of bind-mounts
   if [[ -n "$TAKE_FILE_OWNERSHIP" ]]; then
     chown -R 1000:0 /usr/share/wazuh-indexer/{data,logs}
   fi
