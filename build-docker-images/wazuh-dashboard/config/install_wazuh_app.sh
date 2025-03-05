@@ -22,7 +22,7 @@ elif [ "$MAJOR_BUILD" -eq "$MAJOR_CURRENT" ]; then
 fi
 
 # Install Wazuh App
-$INSTALL_DIR/bin/opensearch-dashboards-plugin install https://duplo-wazuh.s3.us-west-2.amazonaws.com/wazuh-4.7.2.zip --allow-root
+$INSTALL_DIR/bin/opensearch-dashboards-plugin install $WAZUH_APP --allow-root
 
 # Customize Duplocloud icons
 cp -f /tmp/assets/*.svg /usr/share/wazuh-dashboard/src/core/server/core_app/assets/
