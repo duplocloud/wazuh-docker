@@ -1,5 +1,5 @@
 # Wazuh Docker Copyright (C) 2017, Wazuh Inc. (License GPLv2)
-FROM amazonlinux:2023 AS builder
+FROM  amazonlinux:2023 AS builder
 
 ARG WAZUH_VERSION
 ARG WAZUH_TAG_REVISION
@@ -83,9 +83,9 @@ RUN mkdir -p /var/lib/wazuh-indexer && chown 1000:1000 /var/lib/wazuh-indexer &&
     chmod 600 /usr/share/wazuh-indexer/opensearch.yml
 
 # Install repositories for snapshot management.
-RUN /usr/share/wazuh-indexer/bin/opensearch-plugin install --batch repository-s3
-RUN /usr/share/wazuh-indexer/bin/opensearch-plugin install --batch repository-azure
-RUN /usr/share/wazuh-indexer/bin/opensearch-plugin install --batch repository-gcs
+RUN /entrypoint.sh  /usr/share/wazuh-indexer/bin/opensearch-plugin install --batch repository-s3
+RUN /entrypoint.sh /usr/share/wazuh-indexer/bin/opensearch-plugin install --batch repository-azure
+RUN /entrypoint.sh /usr/share/wazuh-indexer/bin/opensearch-plugin install --batch repository-gcs
 
 USER wazuh-indexer
 

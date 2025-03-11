@@ -9,8 +9,7 @@ ARG INSTALL_DIR=/usr/share/wazuh-dashboard
 # Update and install dependencies
 RUN yum install curl-minimal libcap openssl -y
 
-# Copy custom icons
-COPY assets /tmp/assets
+
 
 COPY config/check_repository.sh /
 RUN chmod 775 /check_repository.sh && \
@@ -33,7 +32,10 @@ COPY config/config.yml /
 RUN bash config.sh
 
 
-
+# Copy custom icons
+COPY assets /tmp/assets
+RUN cp -f /tmp/assets/*.svg /usr/share/wazuh-dashboard/src/core/server/core_app/assets/ && \
+    cp -f /tmp/assets/default_branding/*.svg /usr/share/wazuh-dashboard/src/core/server/core_app/assets/default_branding/
 
 ################################################################################
 # Build stage 1 (the current Wazuh dashboard image):

@@ -13,7 +13,3 @@ fi
 
 rpm --import "${APT_KEY}"
 echo -e "${REPOSITORY}" | tee /etc/yum.repos.d/wazuh.repo
-
-# Customize Duplocloud icons
-cp -f /tmp/assets/*.svg /usr/share/wazuh-dashboard/src/core/server/core_app/assets/
-cp -f /tmp/assets/default_branding/*.svg /usr/share/wazuh-dashboard/src/core/server/core_app/assets/default_branding/
