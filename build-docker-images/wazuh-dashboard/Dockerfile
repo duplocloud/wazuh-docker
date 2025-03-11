@@ -9,6 +9,9 @@ ARG INSTALL_DIR=/usr/share/wazuh-dashboard
 # Update and install dependencies
 RUN yum install curl-minimal libcap openssl -y
 
+# Copy custom icons
+COPY assets /tmp/assets
+
 COPY config/check_repository.sh /
 RUN chmod 775 /check_repository.sh && \
     source /check_repository.sh
@@ -28,6 +31,9 @@ RUN setcap 'cap_net_bind_service=-ep' /usr/share/wazuh-dashboard/node/fallback/b
 COPY config/config.sh .
 COPY config/config.yml /
 RUN bash config.sh
+
+
+
 
 ################################################################################
 # Build stage 1 (the current Wazuh dashboard image):
