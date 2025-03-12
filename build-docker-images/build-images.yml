@@ -10,7 +10,7 @@ services:
         WAZUH_TAG_REVISION: ${WAZUH_TAG_REVISION}
         FILEBEAT_TEMPLATE_BRANCH: ${FILEBEAT_TEMPLATE_BRANCH}
         WAZUH_FILEBEAT_MODULE: ${WAZUH_FILEBEAT_MODULE}
-    image: duplocloud/wazuh-manager:${WAZUH_IMAGE_VERSION}
+    image: duplocloud/wazuh-manager:${WAZUH_IMAGE_VERSION}-ssl
     hostname: wazuh.manager
     restart: always
     ports:

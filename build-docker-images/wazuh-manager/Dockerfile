@@ -39,7 +39,7 @@ COPY config/filebeat.yml /etc/filebeat/
 
 RUN chmod go-w /etc/filebeat/filebeat.yml
 
-ADD https://raw.githubusercontent.com/wazuh/wazuh/$FILEBEAT_TEMPLATE_BRANCH/extensions/elasticsearch/7.x/wazuh-template.json /etc/filebeat
+COPY config/wazuh-template.json /etc/filebeat
 RUN chmod go-w /etc/filebeat/wazuh-template.json
 
 # Prepare permanent data
@@ -61,6 +61,9 @@ RUN mkdir -p /var/ossec/var/multigroups && \
     sync && rm /permanent_data.sh
 
 RUN rm /etc/yum.repos.d/wazuh.repo
+
+COPY config/wazuh_manager.conf /wazuh-config-mount/etc/ossec.conf
+COPY config/wazuh_indexer_ssl_certs/* /etc/ssl/
 
 # Services ports
 EXPOSE 55000/tcp 1514/tcp 1515/tcp 514/udp 1516/tcp
