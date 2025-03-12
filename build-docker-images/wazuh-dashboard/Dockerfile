@@ -89,7 +89,7 @@ RUN chown 1000:1000 /*.sh
 COPY --from=builder --chown=1000:1000 $INSTALL_DIR $INSTALL_DIR
 
 ## Copy  opensearch dashboard file
-COPY config/opensearch_dashboards.yml /usr/share/wazuh-dashboard
+COPY config/opensearch_dashboards.yml /usr/share/wazuh-dashboard/config/opensearch_dashboards.yml
 
 
 # Create custom directory
