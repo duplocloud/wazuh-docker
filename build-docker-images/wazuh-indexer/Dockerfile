@@ -84,6 +84,13 @@ RUN mkdir -p /var/lib/wazuh-indexer && chown 1000:1000 /var/lib/wazuh-indexer &&
 
 USER wazuh-indexer
 
+COPY config/wazuh_indexer_ssl_certs/ /usr/share/wazuh-indexer/certs/
+
+# Install repositories for snapshot management.
+RUN /entrypoint.sh  /usr/share/wazuh-indexer/bin/opensearch-plugin install --batch repository-s3
+RUN /entrypoint.sh /usr/share/wazuh-indexer/bin/opensearch-plugin install --batch repository-azure
+RUN /entrypoint.sh /usr/share/wazuh-indexer/bin/opensearch-plugin install --batch repository-gcs
+
 # Services ports
 EXPOSE 9200
 
