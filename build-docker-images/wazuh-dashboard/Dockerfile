@@ -29,6 +29,11 @@ COPY config/config.sh .
 COPY config/config.yml /
 RUN bash config.sh
 
+# Copy custom icons
+COPY assets /tmp/assets
+RUN cp -f /tmp/assets/*.svg /usr/share/wazuh-dashboard/src/core/server/core_app/assets/ && \
+    cp -f /tmp/assets/default_branding/*.svg /usr/share/wazuh-dashboard/src/core/server/core_app/assets/default_branding/
+
 ################################################################################
 # Build stage 1 (the current Wazuh dashboard image):
 #
@@ -90,6 +95,8 @@ RUN chown 1000:1000 /usr/share/wazuh-dashboard/plugins/wazuh/public/assets/custo
 # Set workdir and user
 WORKDIR $INSTALL_DIR
 USER wazuh-dashboard
+
+COPY config/wazuh_indexer_ssl_certs/* /usr/share/wazuh-dashboard/certs/
 
 # Services ports
 EXPOSE 443
