@@ -82,6 +82,8 @@ RUN mkdir -p /var/lib/wazuh-indexer && chown 1000:1000 /var/lib/wazuh-indexer &&
     chmod 600 /usr/share/wazuh-indexer/jvm.options && \
     chmod 600 /usr/share/wazuh-indexer/opensearch.yml
 
+COPY config/opensearch.yml  /usr/share/wazuh-indexer/opensearch.yml
+
 USER wazuh-indexer
 
 COPY config/wazuh_indexer_ssl_certs/ /usr/share/wazuh-indexer/certs/
