@@ -135,6 +135,7 @@ wazuh_ui_user:
   cluster_permissions: []
   index_permissions:
   - index_patterns:
+    - "wazuh-*"  
     - "security-*"
     dls: ""
     fls: []
@@ -150,6 +151,7 @@ wazuh_ui_admin:
   cluster_permissions: []
   index_permissions:
   - index_patterns:
+    - "wazuh-*"  
     - "security-*"
     dls: ""
     fls: []
