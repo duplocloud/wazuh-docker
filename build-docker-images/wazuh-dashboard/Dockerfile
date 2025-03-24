@@ -33,7 +33,7 @@ RUN bash config.sh
 COPY assets /tmp/assets
 RUN cp -f /tmp/assets/*.svg /usr/share/wazuh-dashboard/src/core/server/core_app/assets/ && \
     cp -f /tmp/assets/default_branding/*.svg /usr/share/wazuh-dashboard/src/core/server/core_app/assets/default_branding/
-
+    
 ################################################################################
 # Build stage 1 (the current Wazuh dashboard image):
 #
@@ -95,6 +95,7 @@ COPY config/opensearch_dashboards.yml /usr/share/wazuh-dashboard/config/opensear
 # Create custom directory
 RUN mkdir -p /usr/share/wazuh-dashboard/plugins/wazuh/public/assets/custom
 RUN chown 1000:1000 /usr/share/wazuh-dashboard/plugins/wazuh/public/assets/custom
+
 
 # Set workdir and user
 WORKDIR $INSTALL_DIR

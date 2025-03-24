@@ -9,16 +9,16 @@ server.ssl.enabled: true
 server.ssl.key: "/usr/share/wazuh-dashboard/certs/wazuh-dashboard-key.pem"
 server.ssl.certificate: "/usr/share/wazuh-dashboard/certs/wazuh-dashboard.pem"
 opensearch.ssl.certificateAuthorities: ["/usr/share/wazuh-dashboard/certs/root-ca.pem"]
-uiSettings.overrides.defaultRoute: /app/wazuh
+uiSettings.overrides.defaultRoute: /app/wz-home
 server.basePath: "/proxy/duplosiem"
 server.rewriteBasePath: true
 opensearchDashboards.branding:
 #  logo:
 #    defaultUrl: "https://duplocloud.com/wp-content/themes/duplocloud/assets/images/logos/logo.svg"
 #    darkModeUrl: "https://duplocloud.com/wp-content/themes/duplocloud/assets/images/logos/logo.svg"
-#  mark:
-#    defaultUrl: "https://duplocloud.com/wp-content/themes/duplocloud/assets/images/logos/logo.svg"
-#    darkModeUrl: "https://duplocloud.com/wp-content/themes/duplocloud/assets/images/logos/logo.svg"
+  mark:
+    defaultUrl: "https://duplocloud.com/wp-content/themes/duplocloud/assets/images/logos/logo.svg"
+    darkModeUrl: "https://duplocloud.com/wp-content/themes/duplocloud/assets/images/logos/logo.svg"
   loadingLogo:
     defaultUrl: "https://duplocloud.com/wp-content/themes/duplocloud/assets/images/logos/logo.svg"
     darkModeUrl: "https://duplocloud.com/wp-content/themes/duplocloud/assets/images/logos/logo.svg"
