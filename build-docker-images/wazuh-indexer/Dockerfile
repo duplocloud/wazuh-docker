@@ -1,5 +1,5 @@
 # Wazuh Docker Copyright (C) 2017, Wazuh Inc. (License GPLv2)
-FROM --platform=linux/amd64 ubuntu:focal AS builder
+FROM ubuntu:focal AS builder
 
 ARG WAZUH_VERSION
 ARG WAZUH_TAG_REVISION
@@ -21,7 +21,7 @@ RUN bash config.sh
 # Copy wazuh-indexer from stage 0
 # Add entrypoint
 ################################################################################
-FROM --platform=linux/amd64 ubuntu:focal
+FROM  ubuntu:focal
 
 ENV USER="wazuh-indexer" \
     GROUP="wazuh-indexer" \
