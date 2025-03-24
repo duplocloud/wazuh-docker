@@ -94,8 +94,13 @@ COPY config/opensearch_dashboards.yml /usr/share/wazuh-dashboard/config/opensear
 
 # Create custom directory
 RUN mkdir -p /usr/share/wazuh-dashboard/plugins/wazuh/public/assets/custom
+RUN mkdir -p /usr/share/wazuh-dashboard/plugins/wazuh/public/assets/custom/images
 RUN chown 1000:1000 /usr/share/wazuh-dashboard/plugins/wazuh/public/assets/custom
 
+#Copy custom assets for health check logo
+#COPY assets /tmp/assets
+#RUN cp -f /usr/share/wazuh-dashboard/src/core/server/core_app/assets/customization.logo.app.svg /usr/share/wazuh-dashboard/plugins/wazuh/public/assets/custom/images/
+RUN cp -f /usr/share/wazuh-dashboard/src/core/server/core_app/assets/customization.logo.healthcheck.svg /usr/share/wazuh-dashboard/plugins/wazuh/public/assets/custom/images/
 
 # Set workdir and user
 WORKDIR $INSTALL_DIR

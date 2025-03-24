@@ -153,3 +153,7 @@
 #     port: <port>
 #     username: <username>
 #     password: <password>
+#Custom branding
+customization.enabled: true
+#customization.logo.app: 'custom/images/customization.logo.app.svg'
+customization.logo.healthcheck: 'custom/images/customization.logo.healthcheck.svg'
