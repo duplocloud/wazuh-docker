@@ -69,7 +69,7 @@ COPY config/wazuh_manager.conf /wazuh-config-mount/etc/ossec.conf
 COPY config/wazuh_indexer_ssl_certs/* /etc/ssl/
 
 RUN sed -i 's/wazuh-alerts-4.x-/security-alerts-4.x-/g' /usr/share/filebeat/module/wazuh/alerts/manifest.yml
-RUN sed -i 's/wazuh-alerts-4.x-/security-alerts-4.x-/g' /usr/share/filebeat/module/wazuh/archives/manifest.yml
+RUN sed -i 's/wazuh-archives-4.x-/security-archives-4.x-/g' /usr/share/filebeat/module/wazuh/archives/manifest.yml
 
 # Services ports
 EXPOSE 55000/tcp 1514/tcp 1515/tcp 514/udp 1516/tcp
