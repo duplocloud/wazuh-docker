@@ -17,8 +17,8 @@ opensearchDashboards.branding:
 #    defaultUrl: "https://duplocloud.com/wp-content/themes/duplocloud/assets/images/logos/logo.svg"
 #    darkModeUrl: "https://duplocloud.com/wp-content/themes/duplocloud/assets/images/logos/logo.svg"
   mark:
-    defaultUrl: "https://duplocloud.com/wp-content/themes/duplocloud/assets/images/logos/logo.svg"
-    darkModeUrl: "https://duplocloud.com/wp-content/themes/duplocloud/assets/images/logos/logo.svg"
+    defaultUrl: "https://duplo-wazuh.s3.us-west-2.amazonaws.com/duplo-logo/duplo-logo.png"
+    darkModeUrl: "https://duplo-wazuh.s3.us-west-2.amazonaws.com/duplo-logo/duplo-logo.png"
   loadingLogo:
     defaultUrl: "https://duplocloud.com/wp-content/themes/duplocloud/assets/images/logos/logo.svg"
     darkModeUrl: "https://duplocloud.com/wp-content/themes/duplocloud/assets/images/logos/logo.svg"
