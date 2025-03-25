@@ -21,7 +21,7 @@
 # ------------------------------- Index patterns -------------------------------
 #
 # Default index pattern to use.
-#pattern: wazuh-alerts-*
+pattern: security-alerts-*
 #
 # ----------------------------------- Checks -----------------------------------
 #
