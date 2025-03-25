@@ -32,8 +32,7 @@ RUN yum install wazuh-manager-${WAZUH_VERSION}-${WAZUH_TAG_REVISION} -y && \
     tar xzf /tmp/s6-overlay-amd64.tar.gz -C /usr ./bin && \
     rm  /tmp/s6-overlay-amd64.tar.gz
 
-RUN sed -i 's/wazuh-alerts-4.x-/security-alerts-4.x-/g' /usr/share/filebeat/module/wazuh/alerts/manifest.yml
-RUN sed -i 's/wazuh-alerts-4.x-/security-alerts-4.x-/g' /usr/share/filebeat/module/wazuh/alerts/archives.yml
+
     
 COPY config/etc/ /etc/
 COPY --chown=root:wazuh config/create_user.py /var/ossec/framework/scripts/create_user.py
@@ -45,6 +44,8 @@ RUN chmod go-w /etc/filebeat/filebeat.yml
 COPY config/wazuh-template.json /etc/filebeat
 RUN chmod go-w /etc/filebeat/wazuh-template.json
 
+RUN sed -i 's/wazuh-alerts-4.x-/security-alerts-4.x-/g' /usr/share/filebeat/module/wazuh/alerts/manifest.yml
+RUN sed -i 's/wazuh-alerts-4.x-/security-alerts-4.x-/g' /usr/share/filebeat/module/wazuh/alerts/archives.yml
 # Prepare permanent data
 # Sync calls are due to https://github.com/docker/docker/issues/9547
 
