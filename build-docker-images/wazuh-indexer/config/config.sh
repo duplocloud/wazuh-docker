@@ -4,6 +4,8 @@ export DH_OPTIONS
 
 export NAME=wazuh-indexer
 export TARGET_DIR=${CURDIR}/debian/${NAME}
+echo $CURDIR
+echo $TARGET_DIR
 
 # Package build options
 export USER=${NAME}
