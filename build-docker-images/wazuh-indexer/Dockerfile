@@ -89,6 +89,7 @@ RUN mkdir -p /var/lib/wazuh-indexer/opensearch-security && \
     chown -R 1000:1000 /var/lib/wazuh-indexer/opensearch-security
 
 COPY config/internal_users.yml /var/lib/wazuh-indexer/opensearch-security/internal_users.yml
+COPY config/internal_users.yml /var/lib/wazuh-indexer/opensearch-security/internal_users_backup.yml
 COPY config/roles_mapping.yml /var/lib/wazuh-indexer/opensearch-security/roles_mapping.yml
 COPY config/roles.yml /var/lib/wazuh-indexer/opensearch-security/roles.yml
 COPY config/action_groups.yml /var/lib/wazuh-indexer/opensearch-security/action_groups.yml

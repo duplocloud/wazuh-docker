@@ -90,14 +90,5 @@ fi
 #  touch "/var/lib/wazuh-indexer/.flag"
 #fi
 
-# --- Apply custom security configuration (users/roles) before OpenSearch starts ---
-cd /usr/share/wazuh-indexer/plugins/opensearch-security/tools
-./securityadmin.sh \
-  -cd /usr/share/wazuh-indexer/opensearch-security/ \
-  -icl -nhnv \
-  -cacert "$CACERT" \
-  -cert "$CERT" \
-  -key "$KEY"
-
 
 run_as_other_user_if_needed /usr/share/wazuh-indexer/bin/opensearch <<<"$KEYSTORE_PASSWORD"
