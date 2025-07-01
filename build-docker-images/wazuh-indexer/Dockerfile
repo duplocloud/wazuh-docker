@@ -56,15 +56,15 @@ RUN useradd --system \
             --comment "$USER user" \
             $USER
 
-WORKDIR $INSTALL_DIR
+#WORKDIR $INSTALL_DIR
 
-COPY config/entrypoint.sh /
+#COPY config/entrypoint.sh /
 
-COPY config/securityadmin.sh /
+#COPY config/securityadmin.sh /
 
-RUN chmod 700 /entrypoint.sh && chmod 700 /securityadmin.sh
+#RUN chmod 700 /entrypoint.sh && chmod 700 /securityadmin.sh
 
-RUN chown 1000:1000 /*.sh
+#RUN chown 1000:1000 /*.sh
 
 COPY --from=builder --chown=1000:1000 /usr/share/wazuh-indexer /usr/share/wazuh-indexer
 COPY --from=builder --chown=1000:1000 /etc/wazuh-indexer /usr/share/wazuh-indexer
@@ -82,7 +82,23 @@ RUN mkdir -p /var/lib/wazuh-indexer && chown 1000:1000 /var/lib/wazuh-indexer &&
     chmod 600 /usr/share/wazuh-indexer/jvm.options && \
     chmod 600 /usr/share/wazuh-indexer/opensearch.yml
 
+
 COPY config/internal_users.yml /usr/share/wazuh-indexer/opensearch-security/internal_users.yml
+COPY config/opensearch.yml /usr/share/wazuh-indexer/opensearch-security/opensearch.yml
+COPY config/config.yml /usr/share/wazuh-indexer/opensearch-security/config.yml
+COPY config/action_groups.yml /usr/share/wazuh-indexer/opensearch-security/action_groups.yml
+COPY config/roles_mapping.yml /usr/share/wazuh-indexer/opensearch-security/roles_mapping.yml
+COPY config/roles.yml /usr/share/wazuh-indexer/opensearch-security/roles.yml
+
+WORKDIR $INSTALL_DIR
+
+COPY config/entrypoint.sh /
+
+COPY config/securityadmin.sh /
+
+RUN chmod 700 /entrypoint.sh && chmod 700 /securityadmin.sh
+
+RUN chown 1000:1000 /*.sh
 
 COPY config/opensearch.yml  /usr/share/wazuh-indexer/opensearch.yml
 
