@@ -82,17 +82,9 @@ RUN mkdir -p /var/lib/wazuh-indexer && chown 1000:1000 /var/lib/wazuh-indexer &&
     chmod 600 /usr/share/wazuh-indexer/jvm.options && \
     chmod 600 /usr/share/wazuh-indexer/opensearch.yml
 
-COPY config/opensearch.yml  /usr/share/wazuh-indexer/opensearch.yml
-
-# ---- Pre-populate security config in data dir ----
-
 COPY config/internal_users.yml /usr/share/wazuh-indexer/opensearch-security/internal_users.yml
-COPY config/internal_users.yml /usr/share/wazuh-indexer/opensearch-security/internal_users_backup.yml
-COPY config/roles_mapping.yml /usr/share/wazuh-indexer/opensearch-security/roles_mapping.yml
-COPY config/roles.yml /usr/share/wazuh-indexer/opensearch-security/roles.yml
-COPY config/action_groups.yml /usr/share/wazuh-indexer/opensearch-security/action_groups.yml
 
-RUN chown -R 1000:1000 /usr/share/wazuh-indexer/opensearch-security
+COPY config/opensearch.yml  /usr/share/wazuh-indexer/opensearch.yml
 
 USER wazuh-indexer
 
