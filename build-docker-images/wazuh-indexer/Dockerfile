@@ -27,7 +27,7 @@ COPY config/roles_mapping.yml /
 
 COPY config/roles.yml /
 
-RUN bash config.sh
+RUN bash config.sh 
 
 ################################################################################
 # Build stage 1 (the actual Wazuh indexer image):
@@ -67,7 +67,24 @@ RUN chmod 700 /entrypoint.sh && chmod 700 /securityadmin.sh
 RUN chown 1000:1000 /*.sh
 
 COPY --from=builder --chown=1000:1000 /usr/share/wazuh-indexer /usr/share/wazuh-indexer
-COPY --from=builder --chown=1000:1000 /etc/wazuh-indexer /usr/share/wazuh-indexer
+# Overwrite from /etc/wazuh-indexer, but you don't want to lose your opensearch-security
+# So before you overwrite, move the folder:
+#RUN cp -r /usr/share/wazuh-indexer/opensearch-security /tmp/opensearch-security
+
+#OPY --from=builder --chown=1000:1000 /etc/wazuh-indexer /usr/share/wazuh-indexer
+#COPY --from=builder /usr/share/wazuh-indexer/opensearch-security /usr/share/wazuh-indexer/opensearch-security
+
+# Now restore it!
+#RUN rm -rf /usr/share/wazuh-indexer/opensearch-security && \
+ #   mv /tmp/opensearch-security /usr/share/wazuh-indexer/opensearch-security
+
+
+COPY --from=builder --chown=1000:1000 /etc/wazuh-indexer/ /usr/share/wazuh-indexer/
+COPY --from=builder --chown=1000:1000 /debian/wazuh-indexer/usr/share/wazuh-indexer/opensearch-security/ /usr/share/wazuh-indexer/opensearch-security/
+#COPY --from=builder --chown=1000:1000 /debian/wazuh-indexer/usr/share/wazuh-indexer/opensearch-security /usr/share/wazuh-indexer/opensearch-security
+#COPY --from=builder --chown=1000:1000 /etc/wazuh-indexer/jvm.options /usr/share/wazuh-indexer/jvm.options
+#COPY config/opensearch.yml /usr/share/wazuh-indexer/opensearch.yml
+
 COPY --from=builder --chown=0:0 /debian/wazuh-indexer/usr/lib/systemd /usr/lib/systemd
 COPY --from=builder --chown=0:0 /debian/wazuh-indexer/usr/lib/sysctl.d /usr/lib/sysctl.d
 COPY --from=builder --chown=0:0 /debian/wazuh-indexer/usr/lib/tmpfiles.d /usr/lib/tmpfiles.d
@@ -82,24 +99,6 @@ RUN mkdir -p /var/lib/wazuh-indexer && chown 1000:1000 /var/lib/wazuh-indexer &&
     chmod 600 /usr/share/wazuh-indexer/jvm.options && \
     chmod 600 /usr/share/wazuh-indexer/opensearch.yml
 
-
-COPY config/internal_users.yml /usr/share/wazuh-indexer/opensearch-security/internal_users.yml
-#COPY config/opensearch.yml /usr/share/wazuh-indexer/opensearch-security/opensearch.yml
-#COPY config/config.yml /usr/share/wazuh-indexer/opensearch-security/config.yml
-#COPY config/action_groups.yml /usr/share/wazuh-indexer/opensearch-security/action_groups.yml
-COPY config/roles_mapping.yml /usr/share/wazuh-indexer/opensearch-security/roles_mapping.yml
-COPY config/roles.yml /usr/share/wazuh-indexer/opensearch-security/roles.yml
-
-#WORKDIR $INSTALL_DIR
-
-#COPY config/entrypoint.sh /
-
-#COPY config/securityadmin.sh /
-
-#RUN chmod 700 /entrypoint.sh && chmod 700 /securityadmin.sh
-
-#RUN chown 1000:1000 /*.sh
-
 COPY config/opensearch.yml  /usr/share/wazuh-indexer/opensearch.yml
 
 USER wazuh-indexer
@@ -107,7 +106,7 @@ USER wazuh-indexer
 COPY config/wazuh_indexer_ssl_certs/ /usr/share/wazuh-indexer/certs/
 
 # Install repositories for snapshot management.
-RUN /entrypoint.sh  /usr/share/wazuh-indexer/bin/opensearch-plugin install --batch repository-s3
+RUN /entrypoint.sh /usr/share/wazuh-indexer/bin/opensearch-plugin install --batch repository-s3
 RUN /entrypoint.sh /usr/share/wazuh-indexer/bin/opensearch-plugin install --batch repository-azure
 RUN /entrypoint.sh /usr/share/wazuh-indexer/bin/opensearch-plugin install --batch repository-gcs
 
