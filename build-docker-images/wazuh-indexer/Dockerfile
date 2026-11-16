@@ -27,7 +27,7 @@ COPY config/roles_mapping.yml /
 
 COPY config/roles.yml /
 
-RUN bash config.sh
+RUN bash config.sh 
 
 ################################################################################
 # Build stage 1 (the actual Wazuh indexer image):
@@ -68,6 +68,11 @@ RUN chmod 700 /entrypoint.sh && chmod 700 /securityadmin.sh && \
     chown 1000:1000 /*.sh
 
 COPY --from=builder --chown=1000:1000 /usr/share/wazuh-indexer /usr/share/wazuh-indexer
+# Note: upstream's 4.14.x layout moved indexer config (incl. opensearch-security)
+# under config/, which already avoids the old clobber bug that duplocloud's 4.11.1
+# Dockerfile used to work around here (move-aside/restore of opensearch-security).
+# Our own baked opensearch.yml + certs below are COPYed after this and win, so the
+# old workaround is unneeded now — confirmed boot-tested GREEN on 2026-11-02.
 COPY --from=builder --chown=1000:1000 /etc/wazuh-indexer /usr/share/wazuh-indexer/config
 COPY --from=builder --chown=1000:1000 /debian/wazuh-indexer/usr/share/wazuh-indexer /usr/share/wazuh-indexer
 COPY --from=builder --chown=0:0 /debian/wazuh-indexer/usr/lib/systemd /usr/lib/systemd
@@ -83,7 +88,16 @@ RUN mkdir -p /var/lib/wazuh-indexer && chown 1000:1000 /var/lib/wazuh-indexer &&
     chmod 600 /usr/share/wazuh-indexer/config/jvm.options && \
     chmod 600 /usr/share/wazuh-indexer/config/opensearch.yml
 
+COPY config/opensearch.yml  /usr/share/wazuh-indexer/config/opensearch.yml
+
 USER wazuh-indexer
+
+COPY config/wazuh_indexer_ssl_certs/ /usr/share/wazuh-indexer/config/certs/
+
+# Install repositories for snapshot management.
+RUN /entrypoint.sh /usr/share/wazuh-indexer/bin/opensearch-plugin install --batch repository-s3
+RUN /entrypoint.sh /usr/share/wazuh-indexer/bin/opensearch-plugin install --batch repository-azure
+RUN /entrypoint.sh /usr/share/wazuh-indexer/bin/opensearch-plugin install --batch repository-gcs
 
 # Services ports
 EXPOSE 9200

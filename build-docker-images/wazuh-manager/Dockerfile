@@ -38,6 +38,8 @@ RUN yum install wazuh-manager-${WAZUH_VERSION}-${WAZUH_TAG_REVISION} -y && \
     rm -f /var/ossec/etc/sslmanager.key && \
     rm -f /var/ossec/etc/sslmanager.cert
 
+
+    
 COPY config/etc/ /etc/
 COPY --chown=root:wazuh config/create_user.py /var/ossec/framework/scripts/create_user.py
 
@@ -45,8 +47,9 @@ COPY config/filebeat.yml /etc/filebeat/
 
 RUN chmod go-w /etc/filebeat/filebeat.yml
 
-ADD https://raw.githubusercontent.com/wazuh/wazuh/$FILEBEAT_TEMPLATE_BRANCH/extensions/elasticsearch/7.x/wazuh-template.json /etc/filebeat
+COPY config/wazuh-template.json /etc/filebeat
 RUN chmod go-w /etc/filebeat/wazuh-template.json
+
 
 # Prepare permanent data
 # Sync calls are due to https://github.com/docker/docker/issues/9547
@@ -67,6 +70,14 @@ RUN mkdir -p /var/ossec/var/multigroups && \
     sync && rm /permanent_data.sh
 
 RUN rm /etc/yum.repos.d/wazuh.repo
+
+#COPY config/wazuh_manager.conf /wazuh-config-mount/etc/ossec.conf
+COPY config/wazuh_manager.conf /var/ossec/etc/ossec.conf
+RUN chown root:wazuh /var/ossec/etc/ossec.conf && chmod 640 /var/ossec/etc/ossec.conf
+COPY config/wazuh_indexer_ssl_certs/* /etc/ssl/
+
+RUN sed -i 's/wazuh-alerts-4.x-/security-alerts-4.x-/g' /usr/share/filebeat/module/wazuh/alerts/manifest.yml
+RUN sed -i 's/wazuh-archives-4.x-/security-archives-4.x-/g' /usr/share/filebeat/module/wazuh/archives/manifest.yml
 
 # Services ports
 EXPOSE 55000/tcp 1514/tcp 1515/tcp 514/udp 1516/tcp

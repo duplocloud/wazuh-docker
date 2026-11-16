@@ -141,6 +141,7 @@ build() {
 
     echo ""
     echo "Image build process completed!"
+    docker compose -f build-docker-images/build-images.yml --env-file .env build --no-cache wazuh.manager
 
     return 0
 }
