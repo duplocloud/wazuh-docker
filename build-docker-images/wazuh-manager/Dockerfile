@@ -38,8 +38,15 @@ RUN yum install wazuh-manager-${WAZUH_VERSION}-${WAZUH_TAG_REVISION} -y && \
     rm -f /var/ossec/etc/sslmanager.key && \
     rm -f /var/ossec/etc/sslmanager.cert
 
+# CVE remediation: upgrade vulnerable Python packages in Wazuh's embedded framework interpreter
+# (PyJWT CVE-2026-102268/102266/102267/102271/102272/102273, anyio CVE-2026-63374, certifi GHSA-6q48-6c7w-9gw2,
+#  msgpack CVE-2026-114613, pyasn1 CVE-2026-119194/119195/119196/119197, setuptools CVE-2025-47273, urllib3 CVE-2026-97687/97689)
+RUN /var/ossec/framework/python/bin/python3 -m pip install --upgrade \
+    PyJWT==2.14.0 anyio==4.14.2 certifi==2026.10.18 msgpack==1.2.3 \
+    pyasn1==0.6.5 setuptools==78.1.1 urllib3==2.8.0
 
-    
+
+
 COPY config/etc/ /etc/
 COPY --chown=root:wazuh config/create_user.py /var/ossec/framework/scripts/create_user.py
 

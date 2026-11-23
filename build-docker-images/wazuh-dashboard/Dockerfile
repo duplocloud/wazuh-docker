@@ -7,7 +7,7 @@ ARG WAZUH_UI_REVISION
 ARG INSTALL_DIR=/usr/share/wazuh-dashboard
 
 # Update and install dependencies
-RUN yum install curl-minimal libcap openssl -y
+RUN yum install curl-minimal libcap openssl tar gzip findutils -y
 
 COPY config/check_repository.sh /
 RUN chmod 775 /check_repository.sh && \
@@ -28,6 +28,15 @@ RUN setcap 'cap_net_bind_service=-ep' /usr/share/wazuh-dashboard/node/fallback/b
 COPY config/config.sh .
 COPY config/config.yml /
 RUN bash config.sh
+
+# CVE remediation: surgically replace specific vendored node_modules copies
+# with same-major-version fixed releases (see script for per-package rationale
+# and exact version mapping). Not "npm install" - no dependency resolver is
+# invoked, so unrelated packages cannot drift.
+COPY config/cve_patch_npm.sh /
+RUN chmod 755 /cve_patch_npm.sh && \
+    /cve_patch_npm.sh $INSTALL_DIR && \
+    rm /cve_patch_npm.sh
 
 # Copy custom icons
 COPY assets /tmp/assets
