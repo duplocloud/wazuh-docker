@@ -49,6 +49,20 @@ RUN chmod go-w /etc/filebeat/filebeat.yml
 ADD https://raw.githubusercontent.com/wazuh/wazuh/$FILEBEAT_TEMPLATE_BRANCH/extensions/elasticsearch/7.x/wazuh-template.json /etc/filebeat
 RUN chmod go-w /etc/filebeat/wazuh-template.json
 
+# DuploCloud: alerts/archives are indexed as security-* instead of wazuh-*
+RUN grep -q '"wazuh-alerts-4.x-\*"' /etc/filebeat/wazuh-template.json && \
+    sed -i -e 's/"wazuh-alerts-4.x-\*"/"security-alerts-4.x-*"/' \
+           -e 's/"wazuh-archives-4.x-\*"/"security-archives-4.x-*"/' /etc/filebeat/wazuh-template.json && \
+    grep -q 'wazuh-alerts-4.x-' /usr/share/filebeat/module/wazuh/alerts/manifest.yml && \
+    sed -i 's/wazuh-alerts-4.x-/security-alerts-4.x-/g' /usr/share/filebeat/module/wazuh/alerts/manifest.yml && \
+    sed -i 's/wazuh-archives-4.x-/security-archives-4.x-/g' /usr/share/filebeat/module/wazuh/archives/manifest.yml
+
+# DuploCloud: manager config (single-node conf + local indexer + journald) and baked TLS certs.
+# Copied before permanent_data.sh so the volume seed also gets the DuploCloud ossec.conf.
+COPY config/wazuh_manager.conf /var/ossec/etc/ossec.conf
+RUN chown root:wazuh /var/ossec/etc/ossec.conf && chmod 640 /var/ossec/etc/ossec.conf
+COPY config/wazuh_indexer_ssl_certs/* /etc/ssl/
+
 # Prepare permanent data
 # Sync calls are due to https://github.com/docker/docker/issues/9547
 

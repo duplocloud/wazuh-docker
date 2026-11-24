@@ -220,7 +220,8 @@ main() {
   fi
 
   # Mount selected files (WAZUH_CONFIG_MOUNT) to container
-  mount_files
+  # DuploCloud: disabled so the baked/persisted ossec.conf is never overwritten (same as 4.11.1-ssl-v1)
+  # mount_files
 
   # Allow setting custom hostname
   set_custom_hostname
