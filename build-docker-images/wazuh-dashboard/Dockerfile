@@ -30,6 +30,11 @@ COPY config/config.sh .
 COPY config/config.yml /
 RUN bash config.sh
 
+# DuploCloud: custom branding icons
+COPY assets /tmp/assets
+RUN cp -f /tmp/assets/*.svg /usr/share/wazuh-dashboard/src/core/server/core_app/assets/ && \
+    cp -f /tmp/assets/default_branding/*.svg /usr/share/wazuh-dashboard/src/core/server/core_app/assets/default_branding/
+
 ################################################################################
 # Build stage 1 (the current Wazuh dashboard image):
 #
@@ -84,13 +89,22 @@ RUN chown 1000:1000 /*.sh
 # Copy Install dir from builder to current image
 COPY --from=builder --chown=1000:1000 $INSTALL_DIR $INSTALL_DIR
 
+# DuploCloud: opensearch dashboards config (base path /proxy/duplosiem, branding, TLS)
+COPY config/opensearch_dashboards.yml /usr/share/wazuh-dashboard/config/opensearch_dashboards.yml
+
 # Create custom directory
-RUN mkdir -p /usr/share/wazuh-dashboard/plugins/wazuh/public/assets/custom
-RUN chown 1000:1000 /usr/share/wazuh-dashboard/plugins/wazuh/public/assets/custom
+RUN mkdir -p /usr/share/wazuh-dashboard/plugins/wazuh/public/assets/custom/images
+RUN chown -R 1000:1000 /usr/share/wazuh-dashboard/plugins/wazuh/public/assets/custom
+
+# DuploCloud: health-check logo referenced from wazuh.yml
+RUN cp -f /usr/share/wazuh-dashboard/src/core/server/core_app/assets/customization.logo.healthcheck.svg /usr/share/wazuh-dashboard/plugins/wazuh/public/assets/custom/images/
 
 # Set workdir and user
 WORKDIR $INSTALL_DIR
 USER wazuh-dashboard
+
+# DuploCloud: baked TLS certs (same as 4.11.1-ssl image)
+COPY config/wazuh_indexer_ssl_certs/* /usr/share/wazuh-dashboard/certs/
 
 # Services ports
 EXPOSE 443
