@@ -37,6 +37,13 @@ RUN chmod 755 /cve_patch_npm.sh && \
     /cve_patch_npm.sh $INSTALL_DIR && \
     rm /cve_patch_npm.sh
 
+# DuploCloud: remove the customImportMapDashboards plugin (custom GeoJSON region
+# map import). Its compiled browser bundle embeds maplibre-gl 2.4.0
+# (CRITICAL CVE-2026-85061, XSS sanitizer bypass); the only fix is maplibre-gl 6,
+# which needs an upstream plugin rebuild. No other plugin depends on it.
+# Revert this commit if custom region maps are needed.
+RUN rm -rf /usr/share/wazuh-dashboard/plugins/customImportMapDashboards
+
 # DuploCloud: custom branding icons
 COPY assets /tmp/assets
 RUN cp -f /tmp/assets/*.svg /usr/share/wazuh-dashboard/src/core/server/core_app/assets/ && \
