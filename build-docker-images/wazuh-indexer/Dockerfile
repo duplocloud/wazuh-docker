@@ -84,6 +84,18 @@ RUN mkdir -p /var/lib/wazuh-indexer && chown 1000:1000 /var/lib/wazuh-indexer &&
     chmod 600 /usr/share/wazuh-indexer/config/jvm.options && \
     chmod 600 /usr/share/wazuh-indexer/config/opensearch.yml
 
+# DuploCloud: security plugin config (users, roles incl. wazuh_ui_user/security-*,
+# mappings, action groups). Upstream 4.14.10 config.sh tries to copy these into
+# config/opensearch-security/ but that dir doesn't exist in the builder, so the cp
+# fails silently and the image ships the package defaults (admin:admin demo hashes,
+# no wazuh_ui_* roles). 4.11.1-audit-v1 shipped them via the same kind of workaround.
+COPY --chown=1000:1000 config/internal_users.yml config/roles.yml config/roles_mapping.yml config/action_groups.yml \
+     /usr/share/wazuh-indexer/config/opensearch-security/
+# Keep the 4.11.1 path that /securityadmin.sh (-cd .../opensearch-security/) uses
+RUN chmod 640 /usr/share/wazuh-indexer/config/opensearch-security/*.yml && \
+    ln -s /usr/share/wazuh-indexer/config/opensearch-security /usr/share/wazuh-indexer/opensearch-security && \
+    chown -h 1000:1000 /usr/share/wazuh-indexer/opensearch-security
+
 # DuploCloud: baked TLS certs (same as 4.11.1-audit image), 4.14.x config path
 COPY --chown=1000:1000 config/wazuh_indexer_ssl_certs/ /usr/share/wazuh-indexer/config/certs/
 RUN chmod 500 /usr/share/wazuh-indexer/config/certs && \
