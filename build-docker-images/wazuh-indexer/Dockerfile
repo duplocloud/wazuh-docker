@@ -84,7 +84,15 @@ RUN mkdir -p /var/lib/wazuh-indexer && chown 1000:1000 /var/lib/wazuh-indexer &&
     chmod 600 /usr/share/wazuh-indexer/config/jvm.options && \
     chmod 600 /usr/share/wazuh-indexer/config/opensearch.yml
 
+# DuploCloud: baked TLS certs (same as 4.11.1-audit image), 4.14.x config path
+COPY --chown=1000:1000 config/wazuh_indexer_ssl_certs/ /usr/share/wazuh-indexer/config/certs/
+RUN chmod 500 /usr/share/wazuh-indexer/config/certs && \
+    chmod 400 /usr/share/wazuh-indexer/config/certs/*
+
 USER wazuh-indexer
+
+# DuploCloud: snapshot repository plugins
+RUN /entrypoint.sh /usr/share/wazuh-indexer/bin/opensearch-plugin install --batch repository-s3 repository-azure repository-gcs
 
 # Services ports
 EXPOSE 9200
