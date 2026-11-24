@@ -2,7 +2,7 @@ nodes:
   # Wazuh indexer server nodes
   indexer:
     - name: wazuh.indexer
-      ip: wazuh.indexer
+      ip: 127.0.0.1
 
   # Wazuh server nodes
   # Use node_type only with more than one Wazuh manager
