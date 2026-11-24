@@ -94,6 +94,13 @@ USER wazuh-indexer
 # DuploCloud: snapshot repository plugins
 RUN /entrypoint.sh /usr/share/wazuh-indexer/bin/opensearch-plugin install --batch repository-s3 repository-azure repository-gcs
 
+# DuploCloud: CVE remediation - swap vulnerable bundled jars for fixed same-line
+# releases from Maven Central (see config/cve_patch_jars.sh for the exact list)
+USER root
+COPY config/cve_patch_jars.sh /tmp/cve_patch_jars.sh
+RUN bash /tmp/cve_patch_jars.sh /usr/share/wazuh-indexer && rm -f /tmp/cve_patch_jars.sh
+USER wazuh-indexer
+
 # Services ports
 EXPOSE 9200
 
