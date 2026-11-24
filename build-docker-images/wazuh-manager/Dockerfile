@@ -46,7 +46,10 @@ COPY config/filebeat.yml /etc/filebeat/
 
 RUN chmod go-w /etc/filebeat/filebeat.yml
 
-ADD https://raw.githubusercontent.com/wazuh/wazuh/$FILEBEAT_TEMPLATE_BRANCH/extensions/elasticsearch/7.x/wazuh-template.json /etc/filebeat
+# DuploCloud: curl with retries instead of ADD <url> (BuildKit ADD times out on raw.githubusercontent.com)
+RUN curl --fail --silent --show-error -L --retry 5 --retry-all-errors --retry-delay 5 --max-time 120 \
+    https://raw.githubusercontent.com/wazuh/wazuh/$FILEBEAT_TEMPLATE_BRANCH/extensions/elasticsearch/7.x/wazuh-template.json \
+    -o /etc/filebeat/wazuh-template.json
 RUN chmod go-w /etc/filebeat/wazuh-template.json
 
 # DuploCloud: alerts/archives are indexed as security-* instead of wazuh-*
