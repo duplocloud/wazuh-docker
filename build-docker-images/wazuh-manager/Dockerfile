@@ -39,6 +39,15 @@ RUN yum install wazuh-manager-${WAZUH_VERSION}-${WAZUH_TAG_REVISION} -y && \
     rm -f /var/ossec/etc/sslmanager.key && \
     rm -f /var/ossec/etc/sslmanager.cert
 
+# DuploCloud: CVE remediation for Wazuh's embedded framework Python.
+# Upgrade vulnerable packages (pip check clean), then remove pip itself: Wazuh
+# never calls pip at runtime, and pip's vendored copies (setuptools 70.3.0 etc.)
+# are otherwise flagged by scanners. Same approach as the agent image (r13).
+RUN /var/ossec/framework/python/bin/python3 -m pip install --no-cache-dir --root-user-action=ignore --upgrade \
+        pip==26.3 PyJWT==2.14.0 anyio==4.14.2 certifi==2026.10.18 pyasn1==0.6.5 urllib3==2.8.0 && \
+    /var/ossec/framework/python/bin/python3 -m pip check && \
+    /var/ossec/framework/python/bin/python3 -m pip uninstall -y --root-user-action=ignore pip
+
 COPY config/etc/ /etc/
 COPY --chown=root:wazuh config/create_user.py /var/ossec/framework/scripts/create_user.py
 
