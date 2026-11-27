@@ -37,6 +37,9 @@ grep -q 1513629884013 $dashboard_config_file
 _config_exists=$?
 
 if [[ $_config_exists -ne 0 ]]; then
+# DuploCloud: make sure the file ends with a newline, otherwise "hosts:" is glued
+# onto the last line and the YAML becomes unparseable (wz-home fails to load).
+[ -n "$(tail -c1 $dashboard_config_file)" ] && echo >> $dashboard_config_file
 cat << EOF >> $dashboard_config_file
 hosts:
   - 1513629884013:
